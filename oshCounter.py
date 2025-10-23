@@ -59,7 +59,7 @@ class OSMHistoryHandler(osm.SimpleHandler):
     if sublist[0] == user:
      found = num
      break
-   return(found)
+   return found
 
   # if osm ID is not in our list of already processed objects
   # Same OSM IDs can mean a node, way or relation, so store n,w or r after the number for identification
