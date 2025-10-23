@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<head>
+ <title>OSM User/Tag statistic</title>
+ <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+ <style type="text/css" class="init"></style>
+ <style>
+  h1 { font-size: 2.0em; }
+  p { font-size: 0.8em; }
+ </style>
+ <script type="text/javascript" language="javascript" src="https://unpkg.com/jquery.min.js@3.5.1/jquery.min.js"></script>
+ <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+ <script type="text/javascript" class="init">
+  $(document).ready(function() {
+   var t = $('#example').DataTable( {
+    "lengthMenu": [ 25, 50, 100 ],
+    "pageLength": 50,
+    "columnDefs": [ { "searchable": false, "orderable": false, "targets": 0 } ],
+    "order": [[ 5, 'desc' ]]
+   } );
+  } );
+ </script>
+</head>
+
+<body class="wide comments example">
+ <div class="content">
+  <h1 class="page_title">OSM User Statistic</h1>
+  <div class="info">
+   <p>Full history OSM data  - user added the tag {{tag}} to x objects</p>
+   <p>File parsed: {{in_file}}</p>
+   <p>File timestamp: {{time_in_file}}</p>
+   <p>Score = node*{{node_multi}} + ways*{{way_multi}} + relations*{{rel_multi}}</p>
+   <p><br></p>
+  </div>
+  <table id="example" class="display" style="width:100%">
+   <thead>
+    <tr>
+{%- for column_name in titles %}
+     <th>{{column_name}}</th>
+{%- endfor %}
+    </tr>
+   </thead>
+   <tbody>
+{%- for data_item in data_line %}
+    <tr>
+{%- for item in data_item -%}
+     <td>{{item}}</td>
+{%- endfor -%}
+    </tr>
+{%- endfor %}
+   </tbody>
+  </table>
+ </body>
+</html>
+
+
