@@ -37,23 +37,23 @@ class OSMHistoryHandler(osm.SimpleHandler):
  # count the total per object type and call the function to count given tag per user
  def node(self, n):
   self.count_tags(n, 'node')
-  self.t_nodes = self.t_nodes +1
+  self.t_nodes += 1
 
 
  def way(self, n):
   self.count_tags(n, 'way')
-  self.t_ways = self.t_ways +1
+  self.t_ways += 1
 
 
  def relation(self, n):
   self.count_tags(n, 'relation')
-  self.t_relations = self.t_relations +1
+  self.t_relations += 1
 
 
  # count the tags created per user
- def count_tags(self,osm_object, osm_type):
+ def count_tags(self, osm_object, osm_type):
   # position of a user in the result list of lists
-  def user_in_list(user,user_list):
+  def user_in_list(user, user_list):
    found = 0
    for num, sublist in enumerate(user_list, start=0):
     if sublist[0] == user:
@@ -64,36 +64,36 @@ class OSMHistoryHandler(osm.SimpleHandler):
   # if osm ID is not in our list of already processed objects
   # Same OSM IDs can mean a node, way or relation, so store n,w or r after the number for identification
   # and the osm tag is what we are looking for or empty = *
-  if ((osm_type[0]+str(osm_object.id)) not in self.processed_o) :
+  if (osm_type[0] + str(osm_object.id)) not in self.processed_o:
    if (osm_tag in osm_object.tags) or (osm_tag == '*'):
     # if the user is unknown, create an entry in the result list, add username to the set of processed users, 
     # and save the position of the user in the list in a dict 
-    if (osm_object.user not in self.processed_u):
+    if osm_object.user not in self.processed_u:
      # Result list to store name, number of nodes, ways, relations
-     self.user_list.append([osm_object.user,0,0,0])
+     self.user_list.append([osm_object.user, 0, 0, 0])
      # user name set (much faster that dict or list)
      self.processed_u.add(osm_object.user)
      # dict with user name and position of the user in the result list
-     self.processed_u_pos.update({osm_object.user : user_in_list(osm_object.user, self.user_list)})
+     self.processed_u_pos.update({osm_object.user: user_in_list(osm_object.user, self.user_list)})
 
     # get the position of the user in the result list of the current object
     user_pos = self.processed_u_pos[osm_object.user]
 
     # add +1 to the result list depending on object type
     if osm_type == 'node':
-     self.user_list[user_pos][1] = self.user_list[user_pos ][1] + 1
+     self.user_list[user_pos][1] += 1
     elif osm_type == 'way':
-     self.user_list[user_pos][2] = self.user_list[user_pos ][2] + 1
+     self.user_list[user_pos][2] += 1
     elif osm_type == 'relation':
-     self.user_list[user_pos][3] = self.user_list[user_pos ][3] + 1
+     self.user_list[user_pos][3] += 1
 
     # add the OSM ID + n,w or r to the set of already processed objects
-    self.processed_o.add(osm_type[0]+str(osm_object.id))
+    self.processed_o.add(osm_type[0] + str(osm_object.id))
 
 
 # if we find an error, print message and wave good bye
 def report_error(message):
- sys.stderr.write("{}\n".format(message))
+ sys.stderr.write(f"{message}\n")
  exit(1)
 
 
@@ -136,14 +136,14 @@ if __name__ == '__main__':
 
  # assign arguments and make some sanity checks
  osh_file = settings.get("file", args.file)
- if (osh_file == None):
+ if osh_file == None:
   report_error("Please provide Input file with -f or --file")
 
- if (not (os.path.isfile(osh_file) )):
+ if not os.path.isfile(osh_file):
   report_error("Input file (osh) does not exist")
 
  osm_tag = settings.get("tag", args.tag)
- if (osm_tag == None):
+ if osm_tag == None:
   report_error("No tag for filtering provided with -t or --tag")
 
  min_score = settings.get("min", args.min)
@@ -160,7 +160,7 @@ if __name__ == '__main__':
  # get the result list and calc a scoring and total count
  result = []
  for line in osh_handler.user_list:
-  line.append(line[1]*node_multi + line[2]*way_multi + line[3]*rel_multi)
+  line.append(line[1] * node_multi + line[2] * way_multi + line[3] * rel_multi)
   line.append(line[1] + line[2] + line[3])
 
  # sort result list of list
@@ -168,12 +168,12 @@ if __name__ == '__main__':
  
  # add ranking to list with final results
  for rank, line in enumerate(sorted_result, start =1):
-  result.append ([rank,line[0], line [1], line [2], line[3], line[4], line[5]]) 
+  result.append ([rank, line[0], line [1], line [2], line[3], line[4], line[5]]) 
 
  # print top 25 to command line
- for pos,line in enumerate(result, start = 1):
+ for pos, line in enumerate(result, start = 1):
   print(line)
-  if (pos > 24):
+  if pos > 24:
    break
  # define column titles for the html tables and generate the first part of the html file
  titles = ['Rank', 'User', 'Nodes', 'Ways', 'Relations', 'Score', 'Count']
